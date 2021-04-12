@@ -2,7 +2,6 @@ import {Link, Redirect} from 'react-router-dom';
 import React, {useState, useEffect, useContext} from 'react';
 import Help from '../Common/Help';
 import '../Common/Help.css';
-// import {getNearbyRestaurants} from '../Common/LocationHelper';
 import AutocompleteSearchBox from './AutocompleteSearchBox';
 import style from './Preferences.module.css';
 import {SocketContext} from '../../sockets/SocketContext';
@@ -23,7 +22,6 @@ function Preferences() {
   const [Price, setPrice] = useState('1');
   const [Distance, setDistance] = useState('5000');
   const [Location, setLocation] = useState('');
-  const [Cuisines] = useState([]);
   const [Coordinates, setCoordinates] = useState({lat: null, lng: null});
   const [redirect, setRedirect] = useState(false);
   const [cardData, setCardData] = useState(null);
@@ -52,11 +50,8 @@ function Preferences() {
    *
    */
   async function handleSearch() {
-    // console.log(Coordinates);
-    const data = await getNearbyRestaurants(
-        Coordinates, Distance, 'european');
+    const data = await getNearbyRestaurants(Coordinates, Distance, Price);
     setCardData(data);
-    // console.log(data);
   }
 
   useEffect(()=>{
@@ -67,16 +62,14 @@ function Preferences() {
 
 
   const postPreference = () => {
-    console.log(`room code ${code}`);
-    console.log(cardData);
     socketContext.setCode(code);
     socketContext.setHost(true);
+    socketContext.setTimer(Timer);
     SocketEvents.setRestaurants(socketContext.socket, code, cardData);
 
     const newPref = {
       location: Location,
       distance: Number(Distance),
-      cuisines: Cuisines,
       price: Number(Price),
       timer: Timer,
       coordinates: Coordinates,
@@ -90,7 +83,6 @@ function Preferences() {
     axios
         .patch('../sessions/'+code, give)
         .then((res) => {
-          console.log(res.data);
         })
         .catch(function(error) {
           console.log(error);
@@ -99,13 +91,6 @@ function Preferences() {
     SocketEvents.joinRoom(socketContext.socket,
         code, 'Host');
     setRedirect(true);
-    // {redirect && <Redirect to={
-    //   {
-    //     pathname: `/Lobby/${code}`,
-    //     state: cardData,
-    //   }
-    // }
-    // />}
   };
 
   return (

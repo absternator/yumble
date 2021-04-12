@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Countdown from './components/5.Countdown/CountDown';
 import Swiping from './components/6.Swiping/SwipingPage';
 import Result from './components/7.Result/ResultPage';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import {
   Switch,
   Route,
